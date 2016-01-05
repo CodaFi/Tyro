@@ -65,8 +65,8 @@ extension JSONValue : Arbitrary {
 }
 
 func roundTrip<T : protocol<FromJSON, ToJSON>>(_ : T.Type, _ x : JSONValue) -> Testable {
-	if let xs = T.fromJSON(x).right.map(T.toJSON) {
-		return xs == Either.Right(x)
+	if case let .Some(.Right(xs)) = T.fromJSON(x).right.map(T.toJSON) {
+		return xs ==== x
 	}
 	return Discard()
 }
@@ -76,6 +76,7 @@ class JSONSpec : XCTestCase {
 //		forAll { (x : JSONValue) in roundTrip(Swift.String.self, x) },
 		forAll { (x : JSONValue) in roundTrip(Bool.self, x) },
 
+		// N.B. Bitpattern rules are too crazy to test these reliably.
 //		forAll { (x : JSONValue) in roundTrip(Int.self, x) },
 //		forAll { (x : JSONValue) in roundTrip(Int8.self, x) },
 //		forAll { (x : JSONValue) in roundTrip(Int16.self, x) },
